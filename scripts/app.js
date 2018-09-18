@@ -28,6 +28,10 @@ Yike.config(["$routeProvider",function($routeProvider) {
 		templateUrl: "./views/settings.html",
 		controller: "settingsController"
 	})
+	.when("/48",{
+		templateUrl: "./views/list.html",
+		controller: "listController"
+	})
 	.otherwise({
 		redirectTo: "/today"
 	});
@@ -61,6 +65,10 @@ Yike.run(["$rootScope",function($rootScope) {
 			}
 		}
 		
+	}
+
+	$rootScope.goBack = function() {
+		history.go(-1);
 	}
 
 

@@ -8,6 +8,8 @@ controllers.controller("todayController",["$scope","$http","$filter","$rootScope
 	$rootScope.title = "今日一刻";
 	$rootScope.loaded = false;
 	$rootScope.index = 0;
+
+	$rootScope.header = true;
 	var today = $filter("date")(new Date(),"yyyy-MM-dd");
 	$http({
 		url: "./api/today.php",
@@ -25,6 +27,8 @@ controllers.controller("olderController",["$scope","$http","$rootScope",function
 	$rootScope.title = "往期内容";
 	$rootScope.loaded = false;
 	$rootScope.index = 1;
+
+	$rootScope.header = true;
 	$http({
 		url: "./api/older.php" //解决跨域问题 通过服务器做一个代理
 	}).then(function successCallback(info) {
@@ -32,6 +36,35 @@ controllers.controller("olderController",["$scope","$http","$rootScope",function
 		$scope.date = info.data.date;
 		$scope.posts = info.data.posts;
 	})
+
+	//获取被卷去的距离
+	function scroll() {
+		return window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
+	}
+	//获取可视区域的高度
+	function client() {
+		if(window.innerHeight) {
+			return window.innerHeight;
+		}
+		else if(document.compatMode == "CSS1Compat") {
+			return document.documentElement.clientHeight;
+		}
+		else {
+			return document.body.clientHeight;
+		}
+	}
+
+	window.addEventListener("scroll",function() {
+		if(Math.ceil(scroll()+client()) >= Math.floor(document.body.offsetHeight)) {
+			$http({
+				url: "./api/older.php" //解决跨域问题 通过服务器做一个代理
+			}).then(function successCallback(info) {
+				$scope.posts = $scope.posts.concat(info.data.posts);
+				console.log($scope.posts);
+			})
+		}
+	})
+
 }]);
 
 
@@ -40,6 +73,8 @@ controllers.controller("authorController",["$scope","$http","$rootScope",functio
 	$rootScope.title = "热门作者";
 	$rootScope.loaded = false;
 	$rootScope.index = 2;
+
+	$rootScope.header = true;
 	$http({
 		url: "./api/author.php"
 	}).then(function successCallback(info) {
@@ -54,6 +89,8 @@ controllers.controller("categoryController",["$scope","$http","$rootScope",funct
 	$rootScope.title = "栏目浏览";
 	$rootScope.loaded = false;
 	$rootScope.index = 3;
+
+	$rootScope.header = true;
 	$http({
 		url: "./api/category.php"
 	}).then(function successCallback(info) {
@@ -68,14 +105,27 @@ controllers.controller("favouriteController",["$rootScope",function($rootScope) 
 	$rootScope.title = "我的喜欢";
 	$rootScope.loaded = true;
 	$rootScope.index = 4;
+
+	$rootScope.header = true;
 }]);
+
+
 
 //定义一个控制settings.html视图的控制器 settings为静态页不需要控制器去服务器要数据
 controllers.controller("settingsController",["$rootScope",function($rootScope) {
 	$rootScope.title = "设置";
 	$rootScope.loaded = true;
 	$rootScope.index = 5;
+
+	$rootScope.header = true;
 }]);
+
+//定义一个控制list.html视图的控制器 
+controllers.controller("listController",["$rootScope",function($rootScope) {
+	$rootScope.loaded = true;
+	$rootScope.header = false;
+}]);
+
 
 //定义一个控制侧边栏视图的控制器
 controllers.controller("navController",["$scope",function($scope) {
